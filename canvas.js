@@ -1,4 +1,4 @@
-import { HUD, Input } from '@declarative-hud/index.js'
+import { HUD, Input, Label } from "@declarative-hud/index.js";
 import { matrixRotate } from './src/callbacks/rotate';
 import { DegToRad } from './src/utils/constants';
 document.getElementById('app').appendChild(
@@ -15,41 +15,48 @@ const shape = {
   height: 200,
     y: 0,
 }
-const GUI = new HUD({container: document.body, relativeWidth: 20, position: 'right'})
-const slider = GUI.addSection('slider'/*, false@default */);
+
 /* === slider */
 const rangeParams = {
-  min: 1,
+  min: 0,
   max:  360,
   step: 1,
   value: 1,
 }
-const rangeController = GUI.addController(
-    {
-        label: '0to360', 
-        view: new Input(
-            {
-                type: 'range', 
-                attrs: {...rangeParams}
-            }
-        ), 
-        section: slider.getRef
-    }
+
+const GUI = new HUD({container: document.body, minWidth: 15, position: 'right'})
+    GUI.addGroup({name: 'group1', nodes: GUI.addSection('section', 2/* access each as section1|section2|sectionN : whereas N > 2 */)})
+    // GUI.addGroup({name: 'group2', nodes: GUI.addSection('greet'/* access as greet1 */)})
+    // GUI.addGroup({name: 'group3', nodes: GUI.addSection('tick'/* access as tick1 */)})
+
+/* === group1 */
+const rangeInput = new Input({name: 'range', attrs: {...rangeParams}})
+GUI.find('section1').append(
+    rangeInput
 );
-// /* DEV_NOTE:
-// * save/restore works incrementally, restores up to last save call
-// */
+
+/* === group3 */
+const cboxInput = new Input({name: 'cbox1', type: 'checkbox'/* , attrs: {cboxScaling: 1.5} */})
+GUI.find('section2'/* tick1 */).append(
+    new Label('clockwise?'),
+    cboxInput
+)
 
 // // First path
 ctx.setTransform(1,0,0,1, shape.x, shape.y);
 ctx.fillStyle = 'green'
 ctx.fillRect(shape.x, shape.y, shape.width, shape.height);
 
-GUI.find(rangeController.getRef).on('input', function(){
+GUI.find(rangeInput.name).on('input', function(){
 
   ctx.resetTransform() /* DEV_NOTE # this was a culprit I could not get invoked in Konva.js */
   ctx.clearRect(shape.x, shape.y, canvas.width, canvas.height)
-  ctx.setTransform(...matrixRotate( DegToRad( parseInt( this.value ) ) ), shape.x, shape.y)
+  if (GUI.find(cboxInput.name).checked){
+    ctx.setTransform(...matrixRotate( DegToRad( parseInt( +1*this.value ) ) ), shape.x, shape.y)
+  }
+  else {
+    ctx.setTransform(...matrixRotate( DegToRad( parseInt( -1*this.value ) ) ), shape.x, shape.y)
+  }
   ctx.fillRect(shape.x, shape.y, shape.width, shape.height);
 
 });
