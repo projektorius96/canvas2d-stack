@@ -26,8 +26,6 @@ const rangeParams = {
 
 const GUI = new HUD({container: document.body, minWidth: 15, position: 'right'})
     GUI.addGroup({name: 'group1', nodes: GUI.addSection('section', 2/* access each as section1|section2|sectionN : whereas N > 2 */)})
-    // GUI.addGroup({name: 'group2', nodes: GUI.addSection('greet'/* access as greet1 */)})
-    // GUI.addGroup({name: 'group3', nodes: GUI.addSection('tick'/* access as tick1 */)})
 
 /* === group1 */
 const rangeInput = new Input({name: 'range', attrs: {...rangeParams}})
